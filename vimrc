@@ -140,6 +140,11 @@ set foldlevel=6
 "set cin
 "set cino=l1g0.5sh0.5s
 
+" vertical line indentation
+let g:indentLine_color_term = 239
+let g:indentLine_color_gui = '#A4E57E'
+let g:indentLine_char = '¦'
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Command mode related
