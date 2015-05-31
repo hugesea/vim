@@ -1,0 +1,81 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoredups:ignorespace
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+umask 007
+
+alias ls='ls --color=tty'
+alias ll='ls -lhtr'
+alias la='ls -A'
+alias gr='grep --color=auto -n -I --exclude-dir=".svn" --exclude-dir="blade-bin" --exclude-dir="third_party" --exclude-dir=".idea" --exclude-dir=".git" --exclude=.tags --exclude=tags --exclude=*.iml --exclude=.build* -r'
+alias ws='cd ~/workspace/'
+alias R='R --no-save'
+alias dmvn='mvn -Dmaven.test.skip=true'
+
+export PATH="~/bin:$PATH"
+export PPROF_PATH="~/bin/pprof"
+ulimit -c unlimited
+
+# Record the shell commandline histories by hijacking PROMPT_COMMAND.
+function hl {
+  LOGFILE=${HOME}/.history/$(date +%Y%m%d).log
+  if [ ! -e $LOGFILE ]; then
+    touch $LOGFILE
+    chown ${USER} $LOGFILE
+  fi
+  date "+%H%M%S ${USER}@`hostname -s` $$ $*" >> $LOGFILE
+}
+function ht {
+  tail "$@" ${HOME}/.history/$(date +%Y%m%d).log
+}
+hl "# new shell"
+trap 'hl "# good bye"' 0
+function fca {
+  grep $* ${HOME}/.history/*.log
+}
+
+# svn methods
+function svnuser {
+  svn log $* | sed -n "/| ${USER} |/, /---------$/ p"
+}
+
+# for the smile faces
+RESET="\[\017\]"
+NORMAL="\[\033[0m\]"
+RED="\[\033[31;1m\]"
+WHITE="\[\033[37;1m\]"
+GREEN="\[\033[32;1m\]"
+SMILEY="${GREEN}:)${NORMAL}"
+FROWNY="${RED}:(${NORMAL}"
+SELECT="RESULT=\$?; if [ \${RESULT} = 0 ]; then echo \"${SMILEY}\"; else echo \"${RESULT}\"\"${FROWNY}\"; fi"
+
+case $TERM in
+xterm*)
+        #PROMPT_COMMAND='echo -ne "\033]0;[${USER}@${HOSTNAME%%.*}] ${PWD/#$HOME/~}\007"'
+        TTY=`tty`
+        PS1="${RESET}${WHITE}\u@\h:\w${NORMAL} \`${SELECT}\`${NORMAL} "
+        PROMPT_COMMAND='echo -ne "\033]0;${TTY##/dev/} ${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\007"; hl "$(history 1)"'
+        ;;
+*)
+        ;;
+esac

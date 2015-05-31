@@ -1,0 +1,44 @@
+snippet cb
+	cc_binary(name = '${1}',
+	          srcs = ['${2}_main.cc',
+	                 ],
+	          deps = [${3}
+	                 ],
+	         )
+snippet ccl
+	cc_library(name = '${1}',
+	           srcs = [${2}
+	                  ],
+	           deps = [${3}
+	                  ],
+	           )
+snippet ct
+	cc_test(name = '${1}',
+	        srcs = ['${2}_test.cc',
+	               ],
+	        deps = [${3}
+	               ],
+	        )
+snippet cp
+	cc_public_library(name = '${1}',
+	                  srcs = ['${2}.h',
+	                         ],
+	                  implements = [${3}
+	                         ],
+	                  )
+snippet pl
+	proto_library(name = '${1}_proto',
+	              srcs = ['${2}.proto',
+	                     ],
+	              deps = [${3}
+	                     ],
+	              ${4:gen_cpp = 1,}
+	              )
+snippet tl
+	thrift_library(name = '${1}_thrift',
+	               srcs = ['${2}.thrift',
+	                      ],
+	               deps = [${3}
+	                      ],
+	               ${4:gen_cpp = 1,}
+	               )
